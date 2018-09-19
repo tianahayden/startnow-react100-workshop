@@ -73,7 +73,12 @@ class Game extends React.Component {
       }],
       stepNumber: 0,
       xIsNext: true,
+      isToggleOn: true,
     };
+
+    this.handleClickButton = this.handleClickButton.bind(this);
+    this.reverseOrder = this.reverseOrder.bind(this);
+    
   }
 
   handleClick(i) {
@@ -102,26 +107,43 @@ class Game extends React.Component {
 
   
   // For Bonus 4 (toggle order of moves ascending or descending)
-  // history is an array with an object that has the values of all the squares at that moment
-  // reverseOrder function changes history to reversed history
-  // set state to change to reveresed
-  // we later reference this function in button onclick
-
+  // setting state to true if we want to reverse order to make it descending
+  // the function is called when you click the ascending/descending button
+  // when creating the moves to display on the page, we say that if the button is clicked,
+  // and therefore this function returns true, then show the moves reversed, so in descending order 
+  
+  handleClickButton() {
+    this.setState(state => ({
+      isToggleOn: !state.isToggleOn
+    }));
+    this.reverseOrder()
+  }
+  
+  
   reverseOrder() {
-    this.setState({
-      history: this.state.history.reverse(),
-    });
+    if (this.state.isToggleOn == true) {
+      this.setState({
+        reverse: true
+      });
+    }
+    else {
+      this.setState({
+        reverse: false
+      });
+    }
+    
   }
 
 
+  
 
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
-    const winnerSquares = calculateWinnerSquares(current.squares);
+    const winnerSquares = calculateWinnerSquares(current.squares); 
 
-    const moves = history.map((step, move) => {
+    let moves = history.map((step, move) => {
       const desc = move ?
         'Move #' + move :
         'Game start';
@@ -147,6 +169,12 @@ class Game extends React.Component {
       } 
 
     });
+
+   // For Bonus 4 (toggle order of moves ascending or descending)
+   // setting the moves to display as reversed
+    if (this.state.reverse == true) {
+      moves = moves.reverse()
+    }
 
     let status;
     if (winner) {
@@ -175,7 +203,7 @@ class Game extends React.Component {
         <div className="game-info">
           <div>{status}</div>
           <ol>{moves}</ol>
-          <button onClick={this.reverseOrder}>Ascending/ Descending</button>
+          <button onClick={this.handleClickButton}>Ascending/ Descending</button>
         </div>
       </div>
     );
